@@ -99,14 +99,27 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import en from './locales/en'
 import zhCN from './locales/zh-CN'
 
 const messages = { en, 'zh-CN': zhCN }
 const { t, locale } = useI18n()
+
+const validPanels = ['home', 'about', 'agentic-intro', 'agentic-context', 'agentic-rag', 'agentic-tool', 'agentic-mcp', 'agentic-skills', 'agentic-workflow', 'vue', 'python', 'csharp', 'docker-k8s']
 const panel = ref('home')
+
+function getPanelFromHash() {
+  const hash = window.location.hash.slice(1) || ''
+  const id = hash.split('?')[0]
+  return validPanels.includes(id) ? id : 'home'
+}
+
+onMounted(() => {
+  panel.value = getPanelFromHash()
+  window.addEventListener('hashchange', () => { panel.value = getPanelFromHash() })
+})
 
 watch(locale, (l) => {
   document.documentElement.lang = l === 'zh-CN' ? 'zh-CN' : 'en'
@@ -122,7 +135,12 @@ const homeArticles = computed(() => messages[locale.value]?.home?.articles ?? []
 const aboutList = computed(() => messages[locale.value]?.about?.list ?? [])
 
 function showPanel(id) {
-  panel.value = id || 'home'
+  const next = id || 'home'
+  panel.value = next
+  const hash = next === 'home' ? '' : next
+  if (window.location.hash.slice(1) !== hash) {
+    window.history.replaceState(null, '', window.location.pathname + (hash ? '#' + hash : ''))
+  }
 }
 
 function setLocale(l) {
