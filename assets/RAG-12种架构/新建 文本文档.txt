@@ -1,0 +1,131 @@
+【前沿速递】12 种 RAG（检索增强生成）的新型高级架构与方法
+
+RAG（检索增强生成） 曾是极其热门的话题之一。而本周非常幸运地看到了一些关于 RAG 的真正令人兴奋的新研究
+
+让我们一起来看看近期出现的 12 种 RAG 高级架构与方法：
+
+1. Mindscape-Aware RAG (MiA-RAG)
+全局感知 RAG
+
+图片
+MiA-RAG 通过首先构建整个文本的高层摘要（即“全局视图”），帮助 RAG 系统处理长文档。这个全局视图随后被用来指导系统检索什么内容以及如何回答，帮助模型将分散的证据连接起来，像人类阅读长文档一样进行推理。
+论文标题：Mindscape-Aware Retrieval Augmented Generation for Improved Long Context Understanding
+
+论文链接：https://arxiv.org/abs/2512.17220
+
+感觉这个idea不错，之前看到过很多内容压缩的工作，这个工作是把全文摘要除了加到Context，也加到了Query里面，这样子有利于检索全文感知的Chunk
+
+2. Multi-step RAG with Hypergraph-based Memory (HGMem)
+基于超图记忆的多步 RAG
+
+图片
+HGMem 是一种增强多步 RAG 的新记忆设计。它将检索到的信息组织成超图（Hypergraph），允许事实随着时间的推移相互连接和组合。这有助于模型构建结构化知识，进行更连贯的推理，并更好地理解复杂的上下文。
+
+论文标题：Improving Multi-step RAG with Hypergraph-based Memory for Long-Context Complex Relational Modeling
+
+论文链接：https://arxiv.org/abs/2512.23959
+
+代码链接：https://github.com/Encyclomen/HGMem
+
+这个看起来有点复杂，大家细读论文吧
+
+3. QuCo-RAG
+基于共现统计的动态 RAGQuCo-RAG 是一种动态 RAG 方法，它根据模型预训练数据的统计信息（而非模型自信度）来决定何时检索信息。它会标记罕见或可疑的实体，并检查它们是否在真实数据中共现（Co-occur），从而触发检索以减少幻觉并提高事实准确性。
+
+论文标题：QuCo-RAG: Quantifying Uncertainty from the Pre-training Corpus for Dynamic Retrieval-Augmented Generation
+
+论文链接：https://arxiv.org/pdf/2512.19134
+
+代码链接：https://github.com/ZhishanQ/QuCo-RAG
+
+图片
+这个想法很好，我们经常会面临一个情况是如果大模型已经学了相关查询对应的知识，我们还需要检索吗？这个工作应该一般部分回答了如何解决这个问题。
+
+不过心里有个疑问？“根据模型预训练数据的统计信息（而非模型自信度）来决定何时检索信息”，如果每次都需要统计一个比较大的预训练预料，效率是不是很慢
+
+4. HiFi-RAG
+高保真分层 RAG
+
+图片
+HiFi-RAG 是一个分层的 RAG 管道，在生成之前分多个阶段过滤检索到的文档。它利用 Gemini 2.5 Flash 来重构查询、修剪不相关的段落并附加引用，然后仅依靠 Gemini 2.5 Pro 进行最终的答案生成。
+论文标题：HiFi-RAG: Hierarchical Content Filtering and Two-Pass Generation for Open-Domain RAG
+
+论文链接：https://arxiv.org/pdf/2512.22442
+
+5. Bidirectional RAG
+双向 RAG该方法允许对检索语料库进行受控的“回写”（Write-back）。生成的答案只有通过接地性检查（Grounding checks，包括基于 NLI 的蕴含关系、来源归因验证和新颖性检测）后，才会被添加到知识库中。这使得系统能够在使用过程中扩展其知识库，而不会被幻觉污染。
+
+论文标题：Bidirectional RAG: Safe Self-Improving Retrieval-Augmented Generation Through Multi-Stage Validation
+
+论文链接：https://arxiv.org/pdf/2512.22199
+
+6. TV-RAG
+长视频时序 RAG
+
+图片
+TV-RAG 是一个针对长视频的免训练（Training-free）RAG 框架，它为检索增加了时间感知能力。它利用时间偏移量对检索到的文本进行排序，并使用基于熵的采样来选择关键视频帧，帮助视频语言模型对齐视觉、音频和字幕信息，并在长视频时间轴上进行更准确的推理。
+论文标题：TV-RAG: A Temporal-aware and Semantic Entropy-Weighted Framework for Long Video Retrieval and Understanding
+
+论文链接：https://arxiv.org/pdf/2512.23483
+
+7. MegaRAG
+巨型多模态 RAG
+
+图片
+MegaRAG 专为书籍等长文档构建，围绕多模态知识图谱设计。它从文本和视觉内容中提取实体和关系，构建分层图谱，并在检索和生成过程中使用它。这有助于模型进行全局推理，更准确地回答文本和视觉问题。
+
+论文标题：MegaRAG: Multimodal Knowledge Graph-Based Retrieval Augmented Generation
+
+论文链接：https://arxiv.org/pdf/2512.20626
+
+8. AffordanceRAG
+可供性感知 RAG这是专为移动机器人设计的零样本（Zero-shot）、多模态 RAG 系统。它通过探索环境的图像构建“可供性感知记忆”（Affordance-aware memory），利用视觉和区域特征检索物体和位置，并根据可供性得分对它们进行重排序，从而选择机器人能够在物理上执行的动作，改善现实世界中的操作能力。
+
+论文标题：Affordance RAG: Hierarchical Multimodal Retrieval with Affordance-Aware Embodied Memory for Mobile Manipulation
+
+论文链接：https://arxiv.org/pdf/2512.18987
+
+图片
+9. Graph-O1
+基于图的 O1 推理
+
+图片
+Graph-O1 是一个针对文本属性图问答的代理式（Agent-based）GraphRAG 系统。它不像传统方法那样一次性读取整个图，而是使用蒙特卡洛树搜索（MCTS）和强化学习（RL）逐步探索最相关的节点和边，从而在 LLM 上下文限制内实现高效、结构化的推理。
+论文标题：Graph-O1 : Monte Carlo Tree Search with Reinforcement Learning for Text-Attributed Graph Reasoning
+
+论文链接：https://arxiv.org/pdf/2512.17912
+
+10. SignRAG
+路标识别 RAG
+
+图片
+SignRAG 是建立在 RAG 之上的零样本交通标志识别系统。它使用视觉-语言模型来描述标志图像，从向量数据库中检索相似的标志设计，然后让 LLM 对候选标志进行推理以识别正确的标志，无需进行特定任务的训练。
+
+论文标题：SignRAG: A Retrieval-Augmented System for Scalable Zero-Shot Road Sign Recognition
+
+论文链接：https://arxiv.org/pdf/2512.12885
+
+这个研究工作是在一个交通信号领域的多模态RAG，做法是比较常规的，图片的描述生成，然后索引构建，在检索的时候召回拼接到上下文去做回答
+
+11. Hybrid RAG for Multilingual Document QA
+多语言文档问答混合 RAG
+
+图片
+这是一个针对充满噪声的历史报纸问答的多语言 RAG 系统。它通过语义查询扩展、使用倒数排名融合（Reciprocal Rank Fusion）的多查询检索，以及仅在存在证据时才回答的生成提示词，来处理 OCR 错误和语言演变问题。
+
+论文标题：Hybrid Retrieval-Augmented Generation for Robust Multilingual Document Question Answering
+
+论文链接：https://arxiv.org/pdf/2512.12694
+
+代码链接：https://anonymous.4open.science/r/RAGs-C5AE/
+
+12. RAGPart and RAGMask
+RAG 安全防御机制
+
+图片
+这是针对 RAG 语料库投毒攻击的轻量级防御措施。RAGPart 利用密集检索器如何从分区数据中学习的特性，限制恶意文档的影响；而 RAGMask 则通过掩盖 Token 和检测异常的相似度偏移来标记可疑文档，且无需修改生成模型本身。
+
+论文标题：RAGPart & RAGMask: Retrieval-Stage Defenses Against Corpus Poisoning in Retrieval-Augmented Generation
+
+论文链接：https://arxiv.org/pdf/2512.24268
+

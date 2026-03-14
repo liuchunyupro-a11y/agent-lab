@@ -4,7 +4,7 @@ import zhCN from '../locales/zh-CN'
 
 export default createI18n({
   legacy: false,
-  locale: 'en',
-  fallbackLocale: 'en',
+  locale: 'zh-CN',
+  fallbackLocale: 'zh-CN',
   messages: { en, 'zh-CN': zhCN },
 })
