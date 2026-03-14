@@ -77,7 +77,7 @@
       </div>
 
       <!-- Article -->
-      <div v-for="(_, id) in articleIds" :key="id" v-show="panel === id" class="content-panel active">
+      <div v-for="id in articleIds" :key="id" v-show="panel === id" class="content-panel active">
         <template v-if="article(id)">
           <div class="article-header">
             <h1 class="article-title">{{ articleTitle(id) }}</h1>
