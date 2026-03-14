@@ -1,4 +1,5 @@
 # Build and deploy to GitHub Pages
+# Required: In repo Settings → Pages, set Source to "GitHub Actions" (one-time).
 name: Deploy to GitHub Pages
 
 on:
@@ -24,7 +25,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install
