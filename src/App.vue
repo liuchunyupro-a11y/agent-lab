@@ -76,15 +76,15 @@
         </div>
       </div>
 
-      <!-- Article -->
-      <div v-for="id in articleIds" :key="id" v-show="panel === id" class="content-panel active">
-        <template v-if="article(id)">
+      <!-- Article (single panel, switch by currentArticle) -->
+      <div v-show="currentArticle" class="content-panel active">
+        <template v-if="currentArticle">
           <div class="article-header">
-            <h1 class="article-title">{{ articleTitle(id) }}</h1>
-            <div class="article-meta">{{ article(id).meta }}</div>
+            <h1 class="article-title">{{ currentArticleTitle }}</h1>
+            <div class="article-meta">{{ currentArticle.meta }}</div>
           </div>
           <div class="article-body">
-            <template v-for="(block, bi) in article(id).body" :key="bi">
+            <template v-for="(block, bi) in currentArticle.body" :key="bi">
               <p v-if="block.t === 'p'" v-html="format(block.c)"></p>
               <h2 v-else-if="block.t === 'h2'">{{ block.c }}</h2>
               <ul v-else-if="block.t === 'ul'">
@@ -131,8 +131,19 @@ const articleIds = [
   'vue', 'python', 'csharp', 'docker-k8s',
 ]
 
-const homeArticles = computed(() => messages[locale.value]?.home?.articles ?? [])
-const aboutList = computed(() => messages[locale.value]?.about?.list ?? [])
+const localeKey = computed(() => (locale.value === 'zh-CN' ? 'zh-CN' : 'en'))
+const homeArticles = computed(() => messages[localeKey.value]?.home?.articles ?? [])
+const aboutList = computed(() => messages[localeKey.value]?.about?.list ?? [])
+
+const currentArticle = computed(() => {
+  const p = panel.value
+  if (p === 'home' || p === 'about') return null
+  return messages[localeKey.value]?.articles?.[p] ?? null
+})
+const currentArticleTitle = computed(() => {
+  const a = homeArticles.value.find(x => x.id === panel.value)
+  return a ? a.title : panel.value
+})
 
 function showPanel(id) {
   const next = id || 'home'
@@ -147,14 +158,6 @@ function setLocale(l) {
   locale.value = l
 }
 
-function article(id) {
-  return messages[locale.value]?.articles?.[id] ?? null
-}
-
-function articleTitle(id) {
-  const a = homeArticles.value.find(x => x.id === id)
-  return a ? a.title : id
-}
 
 function format(s) {
   if (typeof s !== 'string') return ''
@@ -260,18 +263,19 @@ main.content-area {
   flex: 1;
   margin-left: var(--sidebar-width);
   min-height: 100%;
-  padding: 32px 40px 48px;
-  max-width: 720px;
+  padding: 32px 48px 48px 40px;
+  max-width: min(960px, calc(100vw - var(--sidebar-width) - 80px));
+  width: 100%;
 }
 
 .portal-hero { padding: 24px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
 .portal-hero h1 { font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; margin-bottom: 12px; }
-.portal-hero .tagline { color: var(--text-muted); font-size: 1.05rem; max-width: 480px; }
+.portal-hero .tagline { color: var(--text-muted); font-size: 1.05rem; max-width: 560px; }
 
 .portal-gateways {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
   margin-bottom: 40px;
 }
 .portal-card {
@@ -334,6 +338,10 @@ main.content-area {
 }
 .article-body :deep(ul) { margin: 16px 0; padding-left: 1.4em; color: var(--text-muted); }
 .article-body :deep(li) { margin-bottom: 6px; }
+
+@media (min-width: 1200px) {
+  main.content-area { max-width: min(1100px, calc(100vw - var(--sidebar-width) - 100px)); }
+}
 
 @media (max-width: 768px) {
   .app { flex-direction: column; }
