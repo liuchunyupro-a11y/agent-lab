@@ -11,8 +11,9 @@ permissions:
   pages: write
   id-token: write
 
-concurrency: group=pages
-cancel-in-progress: true
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -33,7 +34,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_BASE_URL: ${{ contains(github.event.repository.name, '.github.io') && '/' || concat('/', github.event.repository.name, '/') }}
+          VITE_BASE_URL: ${{ contains(github.event.repository.name, '.github.io') && '/' || format('/{0}/', github.event.repository.name) }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
